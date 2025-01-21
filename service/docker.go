@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/aerokube/selenoid/info"
-	"github.com/docker/docker/api/types"
 	"log"
 	"net"
 	"net/url"
@@ -13,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/aerokube/selenoid/info"
+	"github.com/docker/docker/api/types"
 
 	"github.com/aerokube/selenoid/config"
 	"github.com/aerokube/selenoid/session"
@@ -317,7 +318,8 @@ func getPortConfig(service *config.Browser, caps session.Caps, env Environment) 
 		VNCPort:        vnc,
 		DevtoolsPort:   devtools,
 		PortBindings:   portBindings,
-		ExposedPorts:   exposedPorts}, nil
+		ExposedPorts:   exposedPorts,
+	}, nil
 }
 
 const (
@@ -473,7 +475,7 @@ func getHostPort(env Environment, servicePort string, caps session.Caps, stat ty
 func getContainerPorts(stat types.ContainerJSON) map[string]string {
 	ns := stat.NetworkSettings
 
-	var exposedPorts = make(map[string]string)
+	exposedPorts := make(map[string]string)
 
 	if len(ns.Ports) > 0 {
 		for port, portBindings := range ns.Ports {
