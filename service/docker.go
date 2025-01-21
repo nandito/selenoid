@@ -531,15 +531,23 @@ func startVideoContainer(ctx context.Context, cl *client.Client, requestId uint6
 		hostConfig.Links = []string{fmt.Sprintf("%s:%s", browserContainer.ID, defaultBrowserContainerName)}
 		browserContainerName = defaultBrowserContainerName
 	}
+	videoContainerNetwork := caps.RecordingNetwork
+	log.Printf("[%d] [VIDEO_CONTAINER_NETWORK] [%s]", requestId, videoContainerNetwork)
 	env = append(env, fmt.Sprintf("BROWSER_CONTAINER_NAME=%s", browserContainerName))
 	log.Printf("[%d] [CREATING_VIDEO_CONTAINER] [%s]", requestId, videoContainerImage)
+	networkConfig := &network.NetworkingConfig{
+		EndpointsConfig: map[string]*network.EndpointSettings{
+			videoContainerNetwork: {},
+		},
+	}
+
 	videoContainer, err := cl.ContainerCreate(ctx,
 		&ctr.Config{
 			Image: videoContainerImage,
 			Env:   env,
 		},
 		hostConfig,
-		&network.NetworkingConfig{}, nil, "")
+		networkConfig, nil, "")
 	if err != nil {
 		removeContainer(ctx, cl, requestId, browserContainer.ID)
 		return "", fmt.Errorf("create video container: %v", err)

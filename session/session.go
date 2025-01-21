@@ -34,6 +34,7 @@ type Caps struct {
 	ApplicationContainers []string          `json:"applicationContainers,omitempty"`
 	AdditionalNetworks    []string          `json:"additionalNetworks,omitempty"`
 	HostsEntries          []string          `json:"hostsEntries,omitempty"`
+	RecordingNetwork      string            `json:"recordingNetwork,omitempty"`
 	DNSServers            []string          `json:"dnsServers,omitempty"`
 	Labels                map[string]string `json:"labels,omitempty"`
 	SessionTimeout        string            `json:"sessionTimeout,omitempty"`
@@ -53,7 +54,7 @@ func (c *Caps) ProcessExtensionCapabilities() {
 	}
 
 	if c.ExtensionCapabilities != nil {
-		mergo.Merge(c, *c.ExtensionCapabilities, mergo.WithOverride) //We probably need to handle returned error
+		mergo.Merge(c, *c.ExtensionCapabilities, mergo.WithOverride) // We probably need to handle returned error
 	}
 }
 
