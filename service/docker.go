@@ -525,14 +525,18 @@ func startVideoContainer(ctx context.Context, cl *client.Client, requestId uint6
 		AutoRemove:  true,
 		NetworkMode: ctr.NetworkMode(environ.Network),
 	}
-	browserContainerName := getContainerIP(environ.Network, browserContainer)
+	videoContainerNetwork := caps.RecordingNetwork
+	log.Printf("[%d] [VIDEO_CONTAINER_NETWORK] [%s]", requestId, videoContainerNetwork)
+    browserNetwork := videoContainerNetwork
+    if browserNetwork == "" {
+        browserNetwork = environ.Network
+    }
+	browserContainerName := getContainerIP(browserNetwork, browserContainer)
 	if environ.Network == DefaultContainerNetwork {
 		const defaultBrowserContainerName = "browser"
 		hostConfig.Links = []string{fmt.Sprintf("%s:%s", browserContainer.ID, defaultBrowserContainerName)}
 		browserContainerName = defaultBrowserContainerName
 	}
-	videoContainerNetwork := caps.RecordingNetwork
-	log.Printf("[%d] [VIDEO_CONTAINER_NETWORK] [%s]", requestId, videoContainerNetwork)
 	env = append(env, fmt.Sprintf("BROWSER_CONTAINER_NAME=%s", browserContainerName))
 	log.Printf("[%d] [CREATING_VIDEO_CONTAINER] [%s]", requestId, videoContainerImage)
 	networkConfig := &network.NetworkingConfig{
