@@ -527,10 +527,10 @@ func startVideoContainer(ctx context.Context, cl *client.Client, requestId uint6
 	}
 	videoContainerNetwork := caps.RecordingNetwork
 	log.Printf("[%d] [VIDEO_CONTAINER_NETWORK] [%s]", requestId, videoContainerNetwork)
-    browserNetwork := videoContainerNetwork
-    if browserNetwork == "" {
-        browserNetwork = environ.Network
-    }
+	browserNetwork := videoContainerNetwork
+	if browserNetwork == "" {
+		browserNetwork = environ.Network
+	}
 	browserContainerName := getContainerIP(browserNetwork, browserContainer)
 	if environ.Network == DefaultContainerNetwork {
 		const defaultBrowserContainerName = "browser"
@@ -539,12 +539,14 @@ func startVideoContainer(ctx context.Context, cl *client.Client, requestId uint6
 	}
 	env = append(env, fmt.Sprintf("BROWSER_CONTAINER_NAME=%s", browserContainerName))
 	log.Printf("[%d] [CREATING_VIDEO_CONTAINER] [%s]", requestId, videoContainerImage)
-	networkConfig := &network.NetworkingConfig{
-		EndpointsConfig: map[string]*network.EndpointSettings{
-			videoContainerNetwork: {},
-		},
+	networkConfig := &network.NetworkingConfig{}
+	if videoContainerNetwork != "" {
+		networkConfig = &network.NetworkingConfig{
+			EndpointsConfig: map[string]*network.EndpointSettings{
+				videoContainerNetwork: {},
+			},
+		}
 	}
-
 	videoContainer, err := cl.ContainerCreate(ctx,
 		&ctr.Config{
 			Image: videoContainerImage,
